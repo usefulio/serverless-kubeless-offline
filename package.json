@@ -1,0 +1,32 @@
+{
+  "name": "serverless-kubeless-offline",
+  "version": "0.1.0",
+  "description": "Simulates Kubeless NodeJS runtimes to run call your functions offline.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usefulio/serverless-kubeless-offline.git"
+  },
+  "keywords": [
+    "Serverless",
+    "Kubeless",
+    "NodeJS",
+    "Offline"
+  ],
+  "author": "Ian Serlin <ian@useful.io> (https://github.com/usefulio)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/usefulio/serverless-kubeless-offline/issues"
+  },
+  "homepage": "https://github.com/usefulio/serverless-kubeless-offline#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "lodash": "^4.17.10",
+    "morgan": "^1.8.2",
+    "prom-client": "^10.0.2"
+  }
+}
