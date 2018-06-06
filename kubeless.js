@@ -125,6 +125,12 @@ module.exports = function kubeless(options){
     return routes.find(spec => spec.route === route);
   }
 
+  // remove cached versions of the module
+  function clearRequireCache(module) {
+    delete require.cache[require.resolve(module)]
+    return require(module)
+  }
+
   app.all('*', (req, res) => {
     res.header('Access-Control-Allow-Origin', '*');
     if (req.method === 'OPTIONS') {
@@ -163,6 +169,9 @@ module.exports = function kubeless(options){
       });
 
       try {
+        clearRequireCache(modPath);
+
+        // run the handler
         const script = new vm.Script('\nrequire(\'kubeless\')(require(\'' + modPath + '\'));\n', {
           filename: modPath,
           displayErrors: true,
