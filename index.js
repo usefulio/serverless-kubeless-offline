@@ -76,6 +76,7 @@ class KubelessOfflinePlugin {
 
     const routes = compact(flatten(
       map(functions, (spec, name) => {
+        const functionEnvironment = Object.assign({}, process.env, this.service.provider.environment, this.service.functions[name].environment);
         if (spec.events) {
           return map(spec.events, event => {
             const route = get(event, "http.path");
@@ -85,6 +86,7 @@ class KubelessOfflinePlugin {
                 function: spec.handler.split('.')[1],
                 route,
                 timeout: spec.timeout,
+                env: functionEnvironment,
               };
             }
           })

@@ -27,6 +27,8 @@ module.exports = function kubeless(options){
     logger
   } = options;
 
+  const originalEnvironment = Object.assign({}, process.env);
+
   const app = express();
   app.use(morgan('combined'));
   const bodParserOptions = {
@@ -42,6 +44,11 @@ module.exports = function kubeless(options){
   const { timeHistogram, callsCounter, errorsCounter } = helper.prepareStatistics('method', client);
   helper.routeLivenessProbe(app);
   helper.routeMetrics(app, client);
+
+  function restoreEnvironment () {
+    // XXX should this set directly process.env?
+    Object.assign(process.env, originalEnvironment);
+  }
 
   function modRequire(p, req, res, end, libDeps, funcHandler, context) {
     if (p === 'kubeless')
@@ -108,6 +115,7 @@ module.exports = function kubeless(options){
         res.end(JSON.stringify(result));
     }
     end();
+    restoreEnvironment();
   }
 
   function handleError(err, res, label, end) {
@@ -115,6 +123,7 @@ module.exports = function kubeless(options){
     res.status(500).send('Internal Server Error');
     logger.error(`Function failed to execute: ${err.stack}`);
     end();
+    restoreEnvironment();
   }
 
   function funcLabel(req, modName) {
@@ -141,6 +150,8 @@ module.exports = function kubeless(options){
     } else {
       // don't include the leading `/`
       const targetRoute = routeToFunctionSpec(req.path.substr(1));
+      // set the env for the function
+      Object.assign(process.env, targetRoute.env);
 
       const modName = targetRoute.file;
       const funcHandler = targetRoute.function;
