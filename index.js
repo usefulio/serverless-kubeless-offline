@@ -107,6 +107,7 @@ class KubelessOfflinePlugin {
     return new Promise(resolve => {
       process.on('SIGINT', () => {
         this.log('Kubeless offline halting...');
+        this.log('Please close all open connections to this server.');
         resolve();
       });
     });
