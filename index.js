@@ -138,7 +138,13 @@ class KubelessOfflinePlugin {
     this.log("Loading handlers from:");
     this.log(serverConfig.BASE_PATH);
     this.log("Routes:");
-    this.log(JSON.stringify(serverConfig.routes, null, 2));
+    const simpleRoutes = serverConfig.routes.map(route => {
+      let simpleRoute = Object.assign({}, route);
+      // don't log out the env
+      delete simpleRoute['env'];
+      return simpleRoute;
+    });
+    this.log(JSON.stringify(simpleRoutes, null, 2));
 
     // Some users would like to know their environment outside of the handler
     process.env.IS_OFFLINE = true;
