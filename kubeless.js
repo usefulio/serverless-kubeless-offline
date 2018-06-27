@@ -150,6 +150,12 @@ module.exports = function kubeless(options){
     } else {
       // don't include the leading `/`
       const targetRoute = routeToFunctionSpec(req.path.substr(1));
+
+      // request for a route we don't support, e.g. favicon.ico
+      if (!targetRoute) {
+        return res.status(404).end();
+      }
+
       // set the env for the function
       Object.assign(process.env, targetRoute.env);
 
