@@ -15,6 +15,7 @@ const client = require('prom-client');
 const express = require('express');
 const helper = require('./lib/helper');
 const morgan = require('morgan');
+const https = require('https');
 
 module.exports = function kubeless(options){
   const { 
@@ -24,6 +25,7 @@ module.exports = function kubeless(options){
     FUNC_MEMORY_LIMIT, 
     FUNC_TIMEOUT,
     FUNC_PORT,
+    FUNC_SSL,
     logger
   } = options;
 
@@ -209,10 +211,14 @@ module.exports = function kubeless(options){
   });
 
   /**
-   * Returns an HTTP server instance
+   * Returns an HTTP or HTTPS server instance
    * that we can use to shutdown
    * programmatically.
    */
-  return app.listen(funcPort);
+  if (FUNC_SSL) {
+    return https.createServer(FUNC_SSL, app).listen(funcPort);
+  } else {
+    return app.listen(funcPort);
+  }
 }
 

@@ -7,6 +7,7 @@ const map = require('lodash/map');
 const get = require('lodash/get');
 const compact = require('lodash/compact');
 const flatten = require('lodash/flatten');
+const fs = require('fs');
 
 const kubeless = require('./kubeless');
 
@@ -41,6 +42,10 @@ class KubelessOfflinePlugin {
               + '(e.g. "--port 3000" or "-p 3000")',
             required: false,
             shortcut: 'p',
+          },
+          httpsProtocol: {
+            usage: 'To enable HTTPS, specify directory (relative to your cwd, typically your project dir) for both key.pem and server.crt files.',
+            shortcut: 'H',
           },
         },
       },
@@ -118,9 +123,22 @@ class KubelessOfflinePlugin {
     const customPath = get(this.serverless, 'service.custom.serverless-offline.location')
     const servicePath = path.join(this.serverless.config.servicePath, customPath);
 
+
+    const httpsDir = this.options.httpsProtocol || this.options.H;
+    let FUNC_SSL;
+    // HTTPS support
+    if (typeof httpsDir === 'string' && httpsDir.length > 0) {
+      FUNC_SSL = {
+        key: fs.readFileSync(path.resolve(httpsDir, 'key.pem'), 'utf8'),
+        cert: fs.readFileSync(path.resolve(httpsDir, 'server.crt'), 'utf8')
+      };
+      this.log(`Loaded SSL key & certificate from: ${httpsDir}`);
+    }
+
     const serverConfig = defaults({
       routes,
       FUNC_PORT: this.options.p,
+      FUNC_SSL
     }, {
       BASE_PATH: servicePath,
       FUNC_RUNTIME: "nodejs8",
