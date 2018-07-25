@@ -60,6 +60,14 @@ All CLI options are optional:
 
 ```
 --port                  -p  Port to listen on. Default: 3000
+--httpsProtocol         -H  To enable HTTPS, specify directory (relative to your cwd, typically your project dir) for local key and certificate files.
+```
+
+This is how to generate local key and certificate (valid for 365 days) files for HTTPS using openssl:
+
+```
+openssl req -newkey rsa:2048 -new -nodes -keyout key.pem -out csr.pem
+openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out server.crt
 ```
 
 Any of the CLI options can be added to your `serverless.yml`. For example:
@@ -79,11 +87,11 @@ By default you can send your requests to `http://localhost:3000/`. Please note t
 * Kubeless automatically handles CORs pre-flight (`OPTIONS`) requests for you, but additional CORs headers for your responses should be set by your handlers.
 * In your handler, `process.env.IS_OFFLINE` is `true`.
 * When the `Content-Type` header is set to `'application/json'` on a request, Kubeless will `JSON.parse` the body and place it at `event.data`, and so does the plugin.
-  But if you send any other `Content-Type`, Kubeless and this plugin will parse the body as a string and place it at `event.data`. You can always acess the request and response objects directly in a Kubeless environment through `event.extensions.request` and `event.extensions.response`.
+  But if you send any other `Content-Type`, Kubeless and this plugin will parse the body as a string and place it at `event.data`. You can always access the request and response objects directly in a Kubeless environment through `event.extensions.request` and `event.extensions.response`.
 
 ## Usage with serverless-webpack plugin
 
-Running the `serverless kubeless start` command will fire an `init` and a `end` lifecycle hook which is needed for `serverless-offline` to switch off resources.
+Running the `serverless kubeless start` command will fire an `init` and an `end` lifecycle hook which is needed for `serverless-offline` to switch off resources.
 
 Add plugins to your `serverless.yml` file:
 
