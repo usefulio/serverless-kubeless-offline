@@ -121,7 +121,7 @@ class KubelessOfflinePlugin {
   _buildServer() {
     const routes = this._convertRouteDefinitions();
     const customPath = get(this.serverless, 'service.custom.serverless-offline.location')
-    const servicePath = path.join(this.serverless.config.servicePath, customPath);
+    const servicePath = customPath ? path.join(this.serverless.config.servicePath, customPath) : this.serverless.config.servicePath;
 
 
     const httpsDir = this.options.httpsProtocol || this.options.H;
