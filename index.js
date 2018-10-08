@@ -82,8 +82,12 @@ class KubelessOfflinePlugin {
     const routes = compact(flatten(
       map(functions, (spec, name) => {
         const functionEnvironment = Object.assign({}, process.env, this.service.provider.environment, this.service.functions[name].environment);
-        if (spec.events) {
-          return map(spec.events, event => {
+        // use serverless default http event if none are specified
+        // https://serverless.com/framework/docs/providers/kubeless/events/http/
+        const specEvents = spec.events && spec.events.length > 0 ? spec.events : [{ http: {path: name}}]
+
+        if (specEvents) {
+          return map(specEvents, event => {
             const route = get(event, "http.path");
             if (route) {
               return {
@@ -121,7 +125,7 @@ class KubelessOfflinePlugin {
   _buildServer() {
     const routes = this._convertRouteDefinitions();
     const customPath = get(this.serverless, 'service.custom.serverless-offline.location')
-    const servicePath = path.join(this.serverless.config.servicePath, customPath);
+    const servicePath = customPath ? path.join(this.serverless.config.servicePath, customPath) : this.serverless.config.servicePath;
 
 
     const httpsDir = this.options.httpsProtocol || this.options.H;
