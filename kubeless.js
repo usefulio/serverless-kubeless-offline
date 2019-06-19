@@ -34,9 +34,11 @@ module.exports = function kubeless(options){
   const app = express();
   app.use(morgan('combined'));
   const bodParserOptions = {
-    type: '*/*'
+    type: req => !req.is('multipart/form-data')
   };
   app.use(bodyParser.raw(bodParserOptions));
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({extended: true}));
 
   const timeout = Number(FUNC_TIMEOUT || '180');
   const funcPort = Number(FUNC_PORT || '3000');
@@ -78,7 +80,7 @@ module.exports = function kubeless(options){
 
     try {
       let data = req.body;
-      if (req.body.length > 0) {
+      if (!req.is('multipart/form-data') && req.body.length > 0) {
         if (req.get('content-type') === 'application/json') {
           data = JSON.parse(req.body.toString('utf-8'))
         } else {
