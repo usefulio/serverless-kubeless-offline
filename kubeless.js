@@ -33,10 +33,17 @@ module.exports = function kubeless(options){
 
   const app = express();
   app.use(morgan('combined'));
+  
+  const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
+
   const bodParserOptions = {
-    type: '*/*'
+    type: '*/*',
+    limit: `${bodySizeLimit}mb`,
   };
+
   app.use(bodyParser.raw(bodParserOptions));
+  app.use(bodyParser.json({ limit: `${bodySizeLimit}mb` }));
+  app.use(bodyParser.urlencoded({ limit: `${bodySizeLimit}mb`, extended: true }));
 
   const timeout = Number(FUNC_TIMEOUT || '180');
   const funcPort = Number(FUNC_PORT || '3000');
