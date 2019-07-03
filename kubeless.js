@@ -30,7 +30,6 @@ module.exports = function kubeless(options){
   } = options;
 
   const originalEnvironment = Object.assign({}, process.env);
-  const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
 
   const app = express();
   app.use(morgan('combined'));
