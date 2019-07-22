@@ -37,7 +37,7 @@ module.exports = function kubeless(options){
   const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
 
   const bodParserOptions = {
-    type: '*/*',
+    type: req => !req.is('multipart/*'),
     limit: `${bodySizeLimit}mb`,
   };
 
@@ -85,7 +85,7 @@ module.exports = function kubeless(options){
 
     try {
       let data = req.body;
-      if (req.body.length > 0) {
+      if (!req.is('multipart/*') && req.body.length > 0) {
         if (req.get('content-type') === 'application/json') {
           data = JSON.parse(req.body.toString('utf-8'))
         } else {
