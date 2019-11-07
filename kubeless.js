@@ -157,8 +157,8 @@ module.exports = function kubeless(options){
       res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers']);
       res.end();
     } else {
-      // don't include the leading `/`
-      const targetRoute = routeToFunctionSpec(req.path.substr(1));
+      // try finding function without leading `/`, and then retry with the leading `/`
+      const targetRoute = routeToFunctionSpec(req.path.substr(1)) || routeToFunctionSpec(req.path);
 
       // request for a route we don't support, e.g. favicon.ico
       if (!targetRoute) {
