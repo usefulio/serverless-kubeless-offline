@@ -42,10 +42,12 @@ class KubelessOfflinePlugin {
               + '(e.g. "--port 3000" or "-p 3000")',
             required: false,
             shortcut: 'p',
+            type: 'string',
           },
           httpsProtocol: {
             usage: 'To enable HTTPS, specify directory (relative to your cwd, typically your project dir) for both key.pem and server.crt files.',
             shortcut: 'H',
+            type: 'string',
           },
         },
       },
